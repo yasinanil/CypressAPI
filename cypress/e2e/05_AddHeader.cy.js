@@ -5,7 +5,7 @@ describe("Add Header", () => {
 
     let token = null;
 
-    it("Get Token", () => {
+    before(() => {
 
         cy.request({
             method: "Post",
@@ -16,7 +16,7 @@ describe("Add Header", () => {
             }
         }).then((response) => {
             token = response.body.token;
-            expect(response.status).to.eq(200)
+            cy.log(token)
         })
     })
 
@@ -26,8 +26,8 @@ describe("Add Header", () => {
         cy.request({
             method: "Post",
             url: "https://thinking-tester-contact-list.herokuapp.com/contacts",
-            headers:{
-                "Authorization": "Bearer "+token
+            headers: {
+                "Authorization": "Bearer " + token
             },
             body: {
                 "firstName": faker.person.firstName(),
@@ -43,8 +43,22 @@ describe("Add Header", () => {
                 "country": "USA"
             }
         }).then((response) => {
-            token = response.body.token;
             expect(response.status).to.eq(201)
+        })
+    })
+
+
+    it("Get Contact List", () => {
+
+        cy.request({
+            method: "Get",
+            url: "https://thinking-tester-contact-list.herokuapp.com/contacts",
+            headers: {
+                "Authorization": "Bearer " + token
+            }
+        }).then((response) => {
+            cy.log(JSON.stringify(response.body))
+            expect(response.status).to.eq(200)
         })
     })
 })
